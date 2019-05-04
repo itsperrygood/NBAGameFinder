@@ -27,9 +27,14 @@ export class SelectTeams extends Component/*<Props>*/ {
   }
 
   render() {
+    const { navigation } = this.props;
+    const selectTeams = navigation.getParam('SelectedTeams');
+    const selectOpponents = navigation.getParam('SelectedOpponents');
     return (
       <View>
         <Text> Games: </Text>
+        <Text> Teams: {selectTeams} </Text>
+        <Text> Opponents: {selectOpponents} </Text>
       </View>
     );
   }
