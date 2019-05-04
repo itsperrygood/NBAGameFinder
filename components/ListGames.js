@@ -1,14 +1,19 @@
 //Select teams 
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Dimensions, Text, View, FlatList, TouchableHighlight, Image, Button, AsyncStorage, MenuButton, Icon, TouchableOpacity} from 'react-native';
-//import Util from './Util.js';
 
-var username;
+var selectedGames;
+var teamAbrv = ["Bucks":"MIL","Bulls":"CHI","Cavaliers":"CLE","Celtics":"BOS",
+"Clippers":"LAC","Grizzlies":"MEM","Hawks":"ATL","Heat":"MIA","Hornets":"CHA",
+"Jazz":"UTA","Kings":"SAC","Knicks":"NYK","Lakers":"LAL","Mavericks":"DAL",
+"Magic":"ORL","Nets":"BKN","Nuggets":"DEN","Pacers":"IND","Pelicans":"NOP",
+"Pistons":"DET","Raptors":"TOR","Rockets":"HOU","Sixers":"PHI","Spurs";"SAS",
+"Suns":"PHX","Thunder":"OKC","Timberwolves":"MIN","Trailblazers":"POR",
+"Warriors":"GSW","Wizards":"WAS"];]
 
 export class SelectTeams extends Component/*<Props>*/ {
   static navigationOptions = ({ navigation }) => {
     return{
-      //headerLeft: null, //removes back arrow, not necessarily needed here
       headerTitle: (
         <View style={{flexDirection: "row", marginLeft: 10}}>
           <Text style={styles.headerText}> List of Selected Games </Text>
@@ -20,9 +25,54 @@ export class SelectTeams extends Component/*<Props>*/ {
 
   constructor(props){
     super(props);
+    const { navigation } = this.props;
+    const selectedYear = navigation.getParam('SelectedYear');
     this.state = {
+      schedule: [],
       SelectedTeams: [],
       SelectedOpponents: []
+    }
+    this.getSchedule(selectedYear)
+      .then (result => {
+      this.setState ({schedule: result}) //changes the state when getSchedule finishes
+      //this.filterGames()
+    })
+  }
+
+  getSchedule = async function(year){
+    console.log ("_____________________GET ASSET DATA________________________")
+
+    try{
+      var response = await fetch("http://data.nba.net/json/cms/"+year+"/league/nba_games.json",{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'   
+        }
+      })
+    }catch(err){
+      alert("Error getting NBA schedule: " + err)
+    } 
+    const scheduleJson = await response;
+      
+    return scheduleJson; 
+  };
+
+  filterGames(){
+    const { navigation } = this.props;
+    const selectTeams = navigation.getParam('SelectedTeams');
+    const selectOpponents = navigation.getParam('SelectedOpponents');
+    for(i=0;i<this.state.schedule.sports_content.schedule.game.length;i++){
+      for(j=0;j<selectTeams.length;j++){
+        if(this.state.schedule.sports_content.schedule.game[i].h_abrv.includes(selectTeams[j])
+        || this.state.schedule.sports_content.schedule.game[i].v_abrv.includes(selectTeams[j])){
+          for(k=0;k<selectOpponents.length;k++){
+            if(this.state.schedule.sports_content.schedule.game[i].h_abrv.includes(selectOpponents[k])
+            || this.state.schedule.sports_content.schedule.game[i].v_abrv.includes(selectOpponents[k])){
+              selectGames.push(this.state.schedule.sports_content.schedule.game[i])
+            }
+          }
+        } 
+      }
     }
   }
 

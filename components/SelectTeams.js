@@ -151,6 +151,7 @@ export class SelectTeams extends Component/*<Props>*/ {
             this.props.navigation.navigate('ListGames', {
               SelectedTeams: this.state.SelectedTeams,
               SelectedOpponents: this.state.SelectedOpponents,
+              SelectedYear: "2018",
             })
           }}
 	      >
